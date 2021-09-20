@@ -1,0 +1,132 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "Mouse_Maze.h"
+int maze[12][14] = {
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+	{2,0,0,0,1,0,0,0,0,0,1,0,1,1},
+	{1,1,1,0,1,0,1,1,1,0,1,0,0,1},
+	{1,0,1,0,0,0,0,1,0,0,1,0,1,1},
+	{1,1,1,0,1,1,0,1,0,1,1,0,1,1},
+	{1,1,1,0,1,0,0,1,0,0,0,0,1,1},
+	{1,1,1,1,1,0,1,0,0,1,1,1,1,1},
+	{1,0,1,1,0,0,1,0,1,1,0,0,0,1},
+	{1,0,0,0,0,1,1,0,0,0,0,1,0,1},
+	{1,0,1,1,0,0,0,1,0,1,0,1,0,1},
+	{1,0,1,1,1,1,0,0,0,0,0,0,0,2},
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+};
+// max stack
+#define MAX_STACK 1000
+// indoor
+int in_x=1, in_y=0;
+// outdoor
+int out_x=10, out_y=13;
+
+enum direction {N, E, S, W};
+
+struct position{
+	int di, dj;
+	int direction=N;
+};
+int top = 0;
+struct position POS[MAX_STACK];
+
+// push
+void push(int x, int y, int direction){
+	top++;
+	POS[top].di = in_x+x;
+	POS[top].dj = in_y+y;
+	POS[top].direction = direction;
+}
+
+// pop
+void pop(){
+	top--;
+	POS[top].direction +=1;
+}
+void showMaze(){
+	for(int i=0; i<12; i++){
+		String row = "";
+		for(int j=0; j<14; j++){
+			row += IntToStr(maze[i][j]) + " ";
+
+		}
+		Form1->Memo1->Lines->Add(row);
+	}
+}
+int checkCanRun(int go){
+		int temp_x = in_x;
+		int temp_y = in_y;
+		switch(go){
+			case N:
+				temp_x+=-1;
+				temp_y+=0;
+				break;
+			case E:
+				temp_x+=0;
+				temp_y+=1;
+				break;
+			case S:
+				temp_x+=1;
+				temp_y+=0;
+				break;
+			case W:
+				temp_x+=1;
+				temp_y+=-1;
+				break;
+		}
+		if(maze[temp_x][temp_y]==0) return 0;
+		else return 1;
+}
+void findEixt(){
+	  while(in_x!=out_x && in_y!=out_y){
+		for(int i=POS[top].direction; i<=W+1; i++){
+			if(checkCanRun(i)) continue;
+			switch(i){
+				case N:
+					push(-1,0,N);
+					break;
+				case E:
+					push(0,1,E);
+					break;
+				case S:
+					push(1,0,S);
+					break;
+				case W:
+					push(1,-1,W);
+					break;
+				default:
+					pop();
+					break;
+			}
+		}
+	  }
+	  ShowMessage("Find Exit.");
+}
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TForm1 *Form1;
+//---------------------------------------------------------------------------
+
+__fastcall TForm1::TForm1(TComponent* Owner)
+	: TForm(Owner)
+{
+	showMaze();
+}
+
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Button1Click(TObject *Sender)
+{
+	Memo1->Lines->Add(Edit1->Text);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Button2Click(TObject *Sender)
+{
+	//Memo1->Lines->Clear();
+	findEixt();
+}
+//---------------------------------------------------------------------------
