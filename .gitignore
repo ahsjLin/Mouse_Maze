@@ -1,0 +1,16 @@
+# vim
+*.un~
+un~
+*.*un~
+*~
+*.*~
+*.swp
+*~
+
+# for __history
+*.*.*~
+
+########## 
+__recovery
+__history
+__astcache
