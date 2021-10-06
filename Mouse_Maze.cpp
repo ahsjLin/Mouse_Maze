@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "Mouse_Maze.h"
+#include "findExitThread.h"
 #include <chrono>
 #include <thread>
 using namespace std;
@@ -12,6 +13,8 @@ using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
 using std::chrono::system_clock;
 #define ROW 32
 #define COLUMN 32
+bool isfinding = 0;
+bool init = 0;
 /*
 int maze[ROW][COLUMN] = {
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -135,7 +138,17 @@ void pop(){
 	maze[in_x][in_y] = 0;
 }
 void showMaze(){
-	for(int i=0; i<ROW; i++){
+	int limit_up, limit_down;
+	if(init){
+		limit_up = in_x+2;
+		limit_down = in_x-1;
+	}
+	else{
+	   limit_up = ROW;
+	   limit_down = 0;
+    }
+	for(int i=limit_down; i<limit_up; i++){
+		if(init && (i<0 || i>ROW)) continue;
 		String row = "";
 		if(Form1->CheckBox1->Checked){
 			for(int j=0; j<COLUMN; j++){
@@ -173,13 +186,28 @@ void showMaze(){
 				}
 			}
 		}
-		Form1->Memo1->Lines->Add(row);
+		if(init){
+			//Form1->Memo1->Lines->Delete(i);
+			//Form1->Memo1->Lines->Insert(i,row);
+			Form1->Memo1->Lines->Strings[i]= row;
+		}
+		else{
+			Form1->Memo1->Lines->Add(row);
+		}
 	}
 }
 void reDrawPath(){
-	Form1->Memo1->Lines->Clear();
+	if(init==0)	Form1->Memo1->Lines->Clear();
 	showMaze();
-	int delay_time = StrToInt(Form1->Edit1->Text);
+	int delay_time;
+
+	if(Form1->Edit1->Text == ""){
+		delay_time = 0;
+		Form1->Edit1->Text = "0";
+	}
+	else{
+		delay_time = StrToInt(Form1->Edit1->Text);
+	}
 	sleep_for(std::chrono::milliseconds(delay_time));
 }
 int checkCanRun(int go){
@@ -227,6 +255,7 @@ void sendPush(int direction){
 }
 
 void findEixt(){
+	init = 1;
 	  while(in_x!=out_x && in_y!=out_y){
 		  int next_top = top+1;
 		  for(int i=POS[next_top].direction; i<=W+1; i++){
@@ -237,6 +266,7 @@ void findEixt(){
 	  maze[POS[top].di][POS[top].dj] = 3;
 	  reDrawPath();
 	  ShowMessage("Success");
+	  isfinding = false;
 }
 
 
@@ -255,7 +285,10 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::Button2Click(TObject *Sender)
 {
-	findEixt();
+	//findEixt();
+	if(isfinding) return;
+	else isfinding = true;
+	findExitThread *myfindExitThread = new findExitThread(false);
 }
 //---------------------------------------------------------------------------
 
@@ -263,7 +296,8 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 {
 	in_x=1;
 	in_y=1;
-    top = 0;
+	top = 0;
+	init = 0;
 	for(int i=0;i<ROW; i++){
 		for(int j=0; j<COLUMN; j++){
             maze[i][j] = ori[i][j];
@@ -276,7 +310,9 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 
 void __fastcall TForm1::CheckBox1Click(TObject *Sender)
 {
+	init = 0;
 	reDrawPath();
+    init = 1;
 }
 //---------------------------------------------------------------------------
 
