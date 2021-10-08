@@ -146,7 +146,7 @@ void showMaze(){
 	else{
 	   limit_up = ROW;
 	   limit_down = 0;
-    }
+	}
 	for(int i=limit_down; i<limit_up; i++){
 		if(init && (i<0 || i>ROW)) continue;
 		String row = "";
