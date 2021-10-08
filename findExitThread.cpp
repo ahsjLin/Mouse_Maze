@@ -28,7 +28,7 @@ __fastcall findExitThread::findExitThread(bool CreateSuspended)
 void __fastcall findExitThread::Execute()
 {
 	//---- Place thread code here ----
-    FreeOnTerminate = true;
+    //FreeOnTerminate = true;
     findEixt();
 }
 //---------------------------------------------------------------------------
