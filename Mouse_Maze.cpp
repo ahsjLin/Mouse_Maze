@@ -189,7 +189,8 @@ void showMaze(){
 		if(init){
 			//Form1->Memo1->Lines->Delete(i);
 			//Form1->Memo1->Lines->Insert(i,row);
-			Form1->Memo1->Lines->Strings[i]= row;
+			if(row!=Form1->Memo1->Lines->Strings[i])
+				Form1->Memo1->Lines->Strings[i]= row;
 		}
 		else{
 			Form1->Memo1->Lines->Add(row);
@@ -315,5 +316,6 @@ void __fastcall TForm1::CheckBox1Click(TObject *Sender)
     init = 1;
 }
 //---------------------------------------------------------------------------
+
 
 
