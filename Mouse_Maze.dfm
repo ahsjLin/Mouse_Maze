@@ -79,9 +79,9 @@ object Form1: TForm1
     object StaticText2: TStaticText
       Left = 10
       Top = 128
-      Width = 101
+      Width = 107
       Height = 17
-      Caption = 'unknow:  0 or space'
+      Caption = 'unknown:  0 or space'
       TabOrder = 5
     end
     object StaticText3: TStaticText
